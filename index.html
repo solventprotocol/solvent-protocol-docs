@@ -1,0 +1,302 @@
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>solvent-protocol</title><meta name="description" content="Documentation for solvent-protocol"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">solvent-protocol</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1>solvent-protocol </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography"><div align="center">
+  <img height="170x" src="https://app.solvent.xyz/logomark_gradient.png?width=746&height=746" />
+
+  <h1>Solvent Protocol - Financializing NFTs on Solana</h1>
+</div>
+
+<p>Solvent is a protocol to convert the NFTs into a fixed number of fungible tokens of that collection. </p>
+<ul>
+<li>These fungible tokens a.k.a. droplets, are tradable on Serum orderbooks and AMMs across Solana</li>
+<li>1 NFT --&gt; 100 droplets --&gt; 1 NFT</li>
+<li>Droplets are unique to each collection, and every NFT mints the same number of droplets of that collection.</li>
+<li>Droplets enables instant liquidity, and DeFi applications such as LPing, lending, and long/shorts to illiquid NFTs.</li>
+<li>Read our litepaper <a href="https://drive.google.com/file/d/1HwybfOLGkQ_HAo5zBl2Hf19yTnz4rtQH/view">here</a>.</li>
+<li>NFT lockers is a functionality to mint depositor some droplets as a debt but locking that NFT so that it is not available in the open bucket. User can claim their locked NFTs by unlocking them and paying back the droplets debt + some interest within a duration. Failure to unlock the NFT within the duration specified results in locked NFT getting liquidated.</li>
+</ul>
+
+<a href="#protocol-functionality" id="protocol-functionality" style="color: inherit; text-decoration: none;">
+  <h2>Protocol functionality</h2>
+</a>
+<p>These are the following functionality that the users can perform with the protocol:</p>
+<ul>
+<li>Create a bucket on Solvent for an NFT collection</li>
+<li>Mint 100 droplets by depositing the NFT into its suitable bucket</li>
+<li>Burn 100 droplets to claim an NFT from the bucket</li>
+</ul>
+
+<a href="#nft-lockers" id="nft-lockers" style="color: inherit; text-decoration: none;">
+  <h3>NFT Lockers</h3>
+</a>
+<p>NFT lockers are vaults that users can use to lock their NFT for a certain duration <strong>D</strong> into Solvent and unlock instant liquidity for them. Within that duration, the users can pay back the debt and interest and can claim their NFT back. Users can select any duration up to a certain duration limit <strong>Dmax</strong>. The duration can be mentioned in the number of hours. If the users default to make the payment of debt and interest, they’re liquidated. If a user unlocks the NFT before they’re about to be liquidated, they only pay interest for the duration for which the NFT was locked. The interest that is paid is accumulated in an interest vault account.</p>
+<p>The formula for droplets minted for an NFT that gets locked is shown as below:</p>
+<div align="center">
+  <img height="170x" src="https://hjjoexfazvdsdeykmsvc.supabase.co/storage/v1/object/public/solvent-internal-img-assets/nft_locker_principal.jpg" />
+</div>
+
+<p>The formula for the interest that the user ends up paying for unlocking the NFT is shown as below:</p>
+<div align="center">
+  <img height="170x" src="https://hjjoexfazvdsdeykmsvc.supabase.co/storage/v1/object/public/solvent-internal-img-assets/nft_locker_interest_with_cooldown.jpg" />
+</div>
+
+
+
+<a href="#function-calls" id="function-calls" style="color: inherit; text-decoration: none;">
+  <h2>Function calls</h2>
+</a>
+<table>
+<thead>
+<tr>
+<th align="left">Function</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>create_bucket</code></td>
+<td align="left">Create a bucket for an NFT collection on Solvent</td>
+</tr>
+<tr>
+<td align="left"><code>deposit_nft</code></td>
+<td align="left">Deposit an NFT into a bucket to mint 100 droplets</td>
+</tr>
+<tr>
+<td align="left"><code>redeem_nft</code></td>
+<td align="left">Burn 100 droplets to claim the NFT from the bucket</td>
+</tr>
+<tr>
+<td align="left"><code>lock_nft</code></td>
+<td align="left">Lock an NFT for a duration to mint droplets as a debt</td>
+</tr>
+<tr>
+<td align="left"><code>unlock_nft</code></td>
+<td align="left">Unlock a locked NFT by paying back the droplets debt + interest</td>
+</tr>
+<tr>
+<td align="left"><code>liquidate_locker</code></td>
+<td align="left">Liquidate a locked NFT that is overdue unlocking by the depositor</td>
+</tr>
+</tbody></table>
+
+<a href="#state-structs" id="state-structs" style="color: inherit; text-decoration: none;">
+  <h2>State structs</h2>
+</a>
+
+<a href="#bucketstates" id="bucketstates" style="color: inherit; text-decoration: none;">
+  <h3>BucketStates</h3>
+</a>
+
+<a href="#bucketstate" id="bucketstate" style="color: inherit; text-decoration: none;">
+  <h4>BucketState</h4>
+</a>
+<p>PDA to store the details of an NFT collection details on-chain. Represents a unique bucket for an NFT collection.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Fields</th>
+<th align="left">Description</th>
+<th align="left">Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>bump</code></td>
+<td align="left">The canonical bump for the BucketState PDA</td>
+<td align="left">u8</td>
+</tr>
+<tr>
+<td align="left"><code>droplet_mint</code></td>
+<td align="left">The public key address of the droplet token for the NFT collection</td>
+<td align="left">Pubkey</td>
+</tr>
+<tr>
+<td align="left"><code>symbol</code></td>
+<td align="left">The symbol value present in the metadata of the NFT assets</td>
+<td align="left">String</td>
+</tr>
+<tr>
+<td align="left"><code>nft_collection_creator</code></td>
+<td align="left">The public key address of the NFT creator in the metadata with verified value = true</td>
+<td align="left">Pubkey</td>
+</tr>
+</tbody></table>
+
+<a href="#bucketstatev2" id="bucketstatev2" style="color: inherit; text-decoration: none;">
+  <h4>BucketStateV2</h4>
+</a>
+<p>PDA to store the details of an NFT collection details on-chain. Represents a unique bucket for an NFT collection.
+<strong>What&#39;s new: </strong> A bucket of an NFT collection can have multiple verified NFT verified creators. Useful in cases where there are multiple candy machine IDs for a single collection.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Fields</th>
+<th align="left">Description</th>
+<th align="left">Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>bump</code></td>
+<td align="left">The canonical bump for the BucketStateV2 PDA</td>
+<td align="left">u8</td>
+</tr>
+<tr>
+<td align="left"><code>droplet_mint</code></td>
+<td align="left">The public key address of the droplet token for the NFT collection</td>
+<td align="left">Pubkey</td>
+</tr>
+<tr>
+<td align="left"><code>symbol</code></td>
+<td align="left">The symbol value present in the metadata of the NFT assets</td>
+<td align="left">String</td>
+</tr>
+<tr>
+<td align="left"><code>verified_creators</code></td>
+<td align="left">A vector of public key addresses of the NFT creators in the metadata with verified value = true</td>
+<td align="left">Vec&lt; Pubkey &gt;</td>
+</tr>
+</tbody></table>
+
+<a href="#bucketstatev3" id="bucketstatev3" style="color: inherit; text-decoration: none;">
+  <h4>BucketStateV3</h4>
+</a>
+<p>PDA to store the details of an NFT collection details on-chain. Represents a unique bucket for an NFT collection.
+<strong>What&#39;s new: </strong> </p>
+<ul>
+<li>The verification details such as NFT symbol in the metadata + list of verified creators is now stored in a separate enum named CollectionInfo. CollectionInfo also accounts for cases where the NFT collection can be represented using a unique collectionMint as per Metaplex v1.1 metadata standard.</li>
+<li>Additional variables required for NFT lockers</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="left">Fields</th>
+<th align="left">Description</th>
+<th align="left">Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>bump</code></td>
+<td align="left">The canonical bump for the BucketStateV3 PDA</td>
+<td align="left">u8</td>
+</tr>
+<tr>
+<td align="left"><code>droplet_mint</code></td>
+<td align="left">The public key address of the droplet token for the NFT collection</td>
+<td align="left">Pubkey</td>
+</tr>
+<tr>
+<td align="left"><code>collection_info</code></td>
+<td align="left">The enum value representing verification details of the NFT collection</td>
+<td align="left">CollectionInfo</td>
+</tr>
+<tr>
+<td align="left"><code>is_lockers_enabled</code></td>
+<td align="left">A boolean variable representing whether NFT lockers feature is enabled for a bucket of an NFT collection. False by default. Can only be updated by Solvent team. Decentralized in the future.</td>
+<td align="left">bool</td>
+</tr>
+<tr>
+<td align="left"><code>max_locker_duration</code></td>
+<td align="left">The max duration in seconds for which an NFT can be locked into the locker of this bucket</td>
+<td align="left">u64</td>
+</tr>
+<tr>
+<td align="left"><code>num_nfts_in_bucket</code></td>
+<td align="left">The number of NFTs deposited into the bucket</td>
+<td align="left">u16</td>
+</tr>
+<tr>
+<td align="left"><code>num_nfts_in_locker</code></td>
+<td align="left">The number of NFTs locked into a locker of the bucket</td>
+<td align="left">u16</td>
+</tr>
+<tr>
+<td align="left"><code>interest_scaler</code></td>
+<td align="left">The % value multiplier to scale the interest payable for NFT lockers functionality. Range: (0,100]</td>
+<td align="left">u8</td>
+</tr>
+</tbody></table>
+
+<a href="#depositstate" id="depositstate" style="color: inherit; text-decoration: none;">
+  <h3>DepositState</h3>
+</a>
+<p>PDA to store the details of an NFT that is deposited into a bucket. Every NFT deposited into Solvent will now have its own on-chain state representing the deposit transaction.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Fields</th>
+<th align="left">Description</th>
+<th align="left">Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>bump</code></td>
+<td align="left">The canonical bump for the DepositState PDA</td>
+<td align="left">u8</td>
+</tr>
+<tr>
+<td align="left"><code>droplet_mint</code></td>
+<td align="left">The public key address of the droplet token for the NFT collection</td>
+<td align="left">Pubkey</td>
+</tr>
+<tr>
+<td align="left"><code>nft_mint</code></td>
+<td align="left">The public key address of the NFT asset deposited into the bucket</td>
+<td align="left">String</td>
+</tr>
+</tbody></table>
+
+<a href="#lockerstate" id="lockerstate" style="color: inherit; text-decoration: none;">
+  <h3>LockerState</h3>
+</a>
+<p>PDA to store the details of an NFT that is locked into a locker of the bucket. Every NFT locked into lockers of the bucket will have its own on-chain state representing the locked transaction.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Fields</th>
+<th align="left">Description</th>
+<th align="left">Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>droplet_mint</code></td>
+<td align="left">The public key address of the droplet token for the NFT collection</td>
+<td align="left">Pubkey</td>
+</tr>
+<tr>
+<td align="left"><code>depositor</code></td>
+<td align="left">The public key address of the original user who has locked the NFT asset</td>
+<td align="left">Pubkey</td>
+</tr>
+<tr>
+<td align="left"><code>nft_mint</code></td>
+<td align="left">The public key address of the NFT asset deposited into the bucket</td>
+<td align="left">String</td>
+</tr>
+<tr>
+<td align="left"><code>creation_timestamp</code></td>
+<td align="left">The unix timestamp when the NFT got locked into the locker</td>
+<td align="left">u64</td>
+</tr>
+<tr>
+<td align="left"><code>duration</code></td>
+<td align="left">The duration in seconds for which the NFT is locked into the locker</td>
+<td align="left">u64</td>
+</tr>
+<tr>
+<td align="left"><code>principal_amount</code></td>
+<td align="left">The amount of droplets minted to the user as a debt for locking the NFT</td>
+<td align="left">u64</td>
+</tr>
+<tr>
+<td align="left"><code>max_interest_payable</code></td>
+<td align="left">The maximum interest payable by the depositor while unlocking the NFT</td>
+<td align="left">u64</td>
+</tr>
+</tbody></table>
+
+<a href="#queries" id="queries" style="color: inherit; text-decoration: none;">
+  <h2>Queries</h2>
+</a>
+<p>Thank you for your interest in Solvent smart-contracts!
+Please email us at: <a href="emailto:mmdhrumil@solventprotocol.com">mmdhrumil@solventprotocol.com</a> for queries  and more.</p>
+
+<a href="#thanks-❤️" id="thanks-❤️" style="color: inherit; text-decoration: none;">
+  <h3>Thanks ❤️</h3>
+</a>
+</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Exports</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul><li class="tsd-kind-enum"><a href="enums/CollectionInfo.html" class="tsd-kind-icon">Collection<wbr/>Info</a></li><li class="tsd-kind-class"><a href="classes/BucketEmptyError.html" class="tsd-kind-icon">Bucket<wbr/>Empty<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/BucketState.html" class="tsd-kind-icon">Bucket<wbr/>State</a></li><li class="tsd-kind-class"><a href="classes/BucketStateV2.html" class="tsd-kind-icon">Bucket<wbr/>State<wbr/>V2</a></li><li class="tsd-kind-class"><a href="classes/BucketStateV3.html" class="tsd-kind-icon">Bucket<wbr/>State<wbr/>V3</a></li><li class="tsd-kind-class"><a href="classes/BucketUpdateUnauthorizedError.html" class="tsd-kind-icon">Bucket<wbr/>Update<wbr/>Unauthorized<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/CollectionMintMissingError.html" class="tsd-kind-icon">Collection<wbr/>Mint<wbr/>Missing<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/CollectionSymbolInvalidError.html" class="tsd-kind-icon">Collection<wbr/>Symbol<wbr/>Invalid<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/CollectionVerificationFailedError.html" class="tsd-kind-icon">Collection<wbr/>Verification<wbr/>Failed<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/DepositState.html" class="tsd-kind-icon">Deposit<wbr/>State</a></li><li class="tsd-kind-class"><a href="classes/DropletsInsufficientError.html" class="tsd-kind-icon">Droplets<wbr/>Insufficient<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/InterestScalerInvalidError.html" class="tsd-kind-icon">Interest<wbr/>Scaler<wbr/>Invalid<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/InterestVaultInvalidError.html" class="tsd-kind-icon">Interest<wbr/>Vault<wbr/>Invalid<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/LockerAccessUnauthorizedError.html" class="tsd-kind-icon">Locker<wbr/>Access<wbr/>Unauthorized<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/LockerActiveError.html" class="tsd-kind-icon">Locker<wbr/>Active<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/LockerDurationInvalidError.html" class="tsd-kind-icon">Locker<wbr/>Duration<wbr/>Invalid<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/LockerExpiredError.html" class="tsd-kind-icon">Locker<wbr/>Expired<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/LockerState.html" class="tsd-kind-icon">Locker<wbr/>State</a></li><li class="tsd-kind-class"><a href="classes/LockersDisabledError.html" class="tsd-kind-icon">Lockers<wbr/>Disabled<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/MigrationState.html" class="tsd-kind-icon">Migration<wbr/>State</a></li><li class="tsd-kind-type-alias"><a href="modules.html#BucketStateArgs" class="tsd-kind-icon">Bucket<wbr/>State<wbr/>Args</a></li><li class="tsd-kind-type-alias"><a href="modules.html#BucketStateV2Args" class="tsd-kind-icon">Bucket<wbr/>State<wbr/>V2<wbr/>Args</a></li><li class="tsd-kind-type-alias"><a href="modules.html#BucketStateV3Args" class="tsd-kind-icon">Bucket<wbr/>State<wbr/>V3<wbr/>Args</a></li><li class="tsd-kind-type-alias"><a href="modules.html#CalculateLoanResult" class="tsd-kind-icon">Calculate<wbr/>Loan<wbr/>Result</a></li><li class="tsd-kind-type-alias"><a href="modules.html#CreateBucketInstructionAccounts" class="tsd-kind-icon">Create<wbr/>Bucket<wbr/>Instruction<wbr/>Accounts</a></li><li class="tsd-kind-type-alias"><a href="modules.html#CreateBucketInstructionArgs" class="tsd-kind-icon">Create<wbr/>Bucket<wbr/>Instruction<wbr/>Args</a></li><li class="tsd-kind-type-alias"><a href="modules.html#DepositNftInstructionAccounts" class="tsd-kind-icon">Deposit<wbr/>Nft<wbr/>Instruction<wbr/>Accounts</a></li><li class="tsd-kind-type-alias"><a href="modules.html#DepositStateArgs" class="tsd-kind-icon">Deposit<wbr/>State<wbr/>Args</a></li><li class="tsd-kind-type-alias"><a href="modules.html#LiquidateLockerInstructionAccounts" class="tsd-kind-icon">Liquidate<wbr/>Locker<wbr/>Instruction<wbr/>Accounts</a></li><li class="tsd-kind-type-alias"><a href="modules.html#LockNftInstructionAccounts" class="tsd-kind-icon">Lock<wbr/>Nft<wbr/>Instruction<wbr/>Accounts</a></li><li class="tsd-kind-type-alias"><a href="modules.html#LockNftInstructionArgs" class="tsd-kind-icon">Lock<wbr/>Nft<wbr/>Instruction<wbr/>Args</a></li><li class="tsd-kind-type-alias"><a href="modules.html#LockerStateArgs" class="tsd-kind-icon">Locker<wbr/>State<wbr/>Args</a></li><li class="tsd-kind-type-alias"><a href="modules.html#MigrateDropletsInstructionAccounts" class="tsd-kind-icon">Migrate<wbr/>Droplets<wbr/>Instruction<wbr/>Accounts</a></li><li class="tsd-kind-type-alias"><a href="modules.html#MigrationStateArgs" class="tsd-kind-icon">Migration<wbr/>State<wbr/>Args</a></li><li class="tsd-kind-type-alias"><a href="modules.html#RedeemNftInstructionAccounts" class="tsd-kind-icon">Redeem<wbr/>Nft<wbr/>Instruction<wbr/>Accounts</a></li><li class="tsd-kind-type-alias"><a href="modules.html#StartMigrationInstructionAccounts" class="tsd-kind-icon">Start<wbr/>Migration<wbr/>Instruction<wbr/>Accounts</a></li><li class="tsd-kind-type-alias"><a href="modules.html#UnlockNftInstructionAccounts" class="tsd-kind-icon">Unlock<wbr/>Nft<wbr/>Instruction<wbr/>Accounts</a></li><li class="tsd-kind-type-alias"><a href="modules.html#UpdateBucketParamsInstructionAccounts" class="tsd-kind-icon">Update<wbr/>Bucket<wbr/>Params<wbr/>Instruction<wbr/>Accounts</a></li><li class="tsd-kind-type-alias"><a href="modules.html#UpdateBucketParamsInstructionArgs" class="tsd-kind-icon">Update<wbr/>Bucket<wbr/>Params<wbr/>Instruction<wbr/>Args</a></li><li class="tsd-kind-variable"><a href="modules.html#PROGRAM_ADDRESS" class="tsd-kind-icon">PROGRAM_<wbr/>ADDRESS</a></li><li class="tsd-kind-variable"><a href="modules.html#PROGRAM_ID" class="tsd-kind-icon">PROGRAM_<wbr/>ID</a></li><li class="tsd-kind-variable"><a href="modules.html#bucketStateBeet" class="tsd-kind-icon">bucket<wbr/>State<wbr/>Beet</a></li><li class="tsd-kind-variable"><a href="modules.html#bucketStateV2Beet" class="tsd-kind-icon">bucket<wbr/>State<wbr/>V2<wbr/>Beet</a></li><li class="tsd-kind-variable"><a href="modules.html#bucketStateV3Beet" class="tsd-kind-icon">bucket<wbr/>State<wbr/>V3<wbr/>Beet</a></li><li class="tsd-kind-variable"><a href="modules.html#calculateLoanResultBeet" class="tsd-kind-icon">calculate<wbr/>Loan<wbr/>Result<wbr/>Beet</a></li><li class="tsd-kind-variable"><a href="modules.html#collectionInfoBeet" class="tsd-kind-icon">collection<wbr/>Info<wbr/>Beet</a></li><li class="tsd-kind-variable"><a href="modules.html#depositStateBeet" class="tsd-kind-icon">deposit<wbr/>State<wbr/>Beet</a></li><li class="tsd-kind-variable"><a href="modules.html#lockerStateBeet" class="tsd-kind-icon">locker<wbr/>State<wbr/>Beet</a></li><li class="tsd-kind-variable"><a href="modules.html#migrationStateBeet" class="tsd-kind-icon">migration<wbr/>State<wbr/>Beet</a></li><li class="tsd-kind-function"><a href="modules.html#createCreateBucketInstruction" class="tsd-kind-icon">create<wbr/>Create<wbr/>Bucket<wbr/>Instruction</a></li><li class="tsd-kind-function"><a href="modules.html#createDepositNftInstruction" class="tsd-kind-icon">create<wbr/>Deposit<wbr/>Nft<wbr/>Instruction</a></li><li class="tsd-kind-function"><a href="modules.html#createLiquidateLockerInstruction" class="tsd-kind-icon">create<wbr/>Liquidate<wbr/>Locker<wbr/>Instruction</a></li><li class="tsd-kind-function"><a href="modules.html#createLockNftInstruction" class="tsd-kind-icon">create<wbr/>Lock<wbr/>Nft<wbr/>Instruction</a></li><li class="tsd-kind-function"><a href="modules.html#createMigrateDropletsInstruction" class="tsd-kind-icon">create<wbr/>Migrate<wbr/>Droplets<wbr/>Instruction</a></li><li class="tsd-kind-function"><a href="modules.html#createRedeemNftInstruction" class="tsd-kind-icon">create<wbr/>Redeem<wbr/>Nft<wbr/>Instruction</a></li><li class="tsd-kind-function"><a href="modules.html#createStartMigrationInstruction" class="tsd-kind-icon">create<wbr/>Start<wbr/>Migration<wbr/>Instruction</a></li><li class="tsd-kind-function"><a href="modules.html#createUnlockNftInstruction" class="tsd-kind-icon">create<wbr/>Unlock<wbr/>Nft<wbr/>Instruction</a></li><li class="tsd-kind-function"><a href="modules.html#createUpdateBucketParamsInstruction" class="tsd-kind-icon">create<wbr/>Update<wbr/>Bucket<wbr/>Params<wbr/>Instruction</a></li><li class="tsd-kind-function"><a href="modules.html#errorFromCode" class="tsd-kind-icon">error<wbr/>From<wbr/>Code</a></li><li class="tsd-kind-function"><a href="modules.html#errorFromName" class="tsd-kind-icon">error<wbr/>From<wbr/>Name</a></li></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="assets/main.js"></script></body></html>
